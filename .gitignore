@@ -1,0 +1,19 @@
+# Binaries
+telegram-downloader
+gram-grabber
+*.exe
+*.test
+*.out
+
+# Secrets & Config
+.env
+session.json
+
+# Downloads
+downloads/
+/downloads
+
+# Editor & System
+.DS_Store
+.vscode/
+.idea/
