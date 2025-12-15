@@ -2,7 +2,14 @@
 
 A CLI tool written in Go to download videos from Telegram channels.
 
+## Features
+
+- 🚀 **Fast Downloads**: Uses 8 parallel threads for maximum speed.
+- ⏯️ **Resumable**: Detects interrupted downloads and lets you resume from where you left off.
+- 📱 **Interactive**: Easy channel selection menu.
+
 ## Requirements
+
 
 - Go 1.25+
 - Telegram App ID and Hash
