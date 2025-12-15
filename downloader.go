@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gotd/td/telegram/downloader"
 	"github.com/gotd/td/tg"
@@ -88,16 +89,43 @@ func processMessages(ctx context.Context, api *tg.Client, dl *downloader.Downloa
 
 		outPath := filepath.Join(outputDir, fileName)
 		fmt.Printf("[%d] Found video: %s (Size: %d bytes)\n", count, fileName, doc.Size)
+		// Check if exists
+		if info, err := os.Stat(outPath); err == nil {
+			fmt.Printf("   - File exists (Size: %d bytes). [c]ontinue, [n]ew, [s]kip? ", info.Size())
+			var choice string
+			fmt.Scanln(&choice)
+			choice = strings.ToLower(choice)
 
-		if _, err := os.Stat(outPath); err == nil {
-			fmt.Println("   - Already downloaded, skipping.")
-			continue
+			if choice == "s" || choice == "skip" {
+				fmt.Println("   - Skipped.")
+				continue
+			}
+
+			if choice == "c" || choice == "continue" {
+				if info.Size() >= int64(doc.Size) {
+					fmt.Println("   - File already complete. Skipped.")
+					continue
+				}
+				fmt.Printf("   - Resuming from %d bytes...\n", info.Size())
+				if err := resumeDownload(ctx, api, doc, outPath, info.Size()); err != nil {
+					fmt.Printf("   - Resume failed: %v. Retrying new download.\n", err)
+					// Fallthrough to new download
+				} else {
+					fmt.Println("   - Resume Complete!")
+					continue
+				}
+			}
+
+			// If "n" or new, or resume failed
+			if choice == "n" || choice == "new" {
+				os.Remove(outPath)
+			}
 		}
 
 		fmt.Println("   - Downloading...")
 		loc := doc.AsInputDocumentFileLocation()
 
-		_, err := dl.Download(api, loc).ToPath(ctx, outPath)
+		_, err := dl.Download(api, loc).WithThreads(8).ToPath(ctx, outPath)
 		if err != nil {
 			fmt.Printf("   - Failed to download: %v\n", err)
 			continue
@@ -111,5 +139,56 @@ func processMessages(ctx context.Context, api *tg.Client, dl *downloader.Downloa
 		fmt.Printf("Processed %d videos.\n", count)
 	}
 
+	return nil
+}
+
+func resumeDownload(ctx context.Context, api *tg.Client, doc *tg.Document, path string, offset int64) error {
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	chunkSize := 512 * 1024 // 512KB
+	loc := doc.AsInputDocumentFileLocation()
+
+	// Convert InputDocumentFileLocation to InputFileLocationClass
+	// Actually UploadGetFile expects InputFileLocationClass.
+	// InputDocumentFileLocation implements it.
+
+	total := int64(doc.Size)
+
+	for offset < total {
+		limit := int(total - offset)
+		if limit > chunkSize {
+			limit = chunkSize
+		}
+
+		// Ensure limit is valid for Telegram (must be divisible by 4KB usually, max 1MB)
+		// 512KB is safe.
+
+		req := &tg.UploadGetFileRequest{
+			Location: loc,
+			Offset:   offset,
+			Limit:    limit,
+		}
+
+		res, err := api.UploadGetFile(ctx, req)
+		if err != nil {
+			return err
+		}
+
+		switch d := res.(type) {
+		case *tg.UploadFile:
+			if _, err := f.Write(d.Bytes); err != nil {
+				return err
+			}
+			offset += int64(len(d.Bytes))
+			fmt.Printf("\r   - Progress: %.2f%%", float64(offset)/float64(total)*100)
+		case *tg.UploadFileCDNRedirect:
+			return fmt.Errorf("CDN redirect not supported in resume mode")
+		}
+	}
+	fmt.Println()
 	return nil
 }
