@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GramGrabber Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0d1c'/%3E%3Cpath d='M27 5 4.5 14l6.6 2.8L24.5 7.6 13.4 18.4l.4 6.5 3.8-4.3 5.5 2.3L27 5Z' fill='%238fd8f2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="sideNav" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"/></svg>
+  </button>
+  <div class="brand">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M29 4 3 14.4l7.6 3.2L26 7 13.2 19.5l.5 7.5 4.4-5 6.3 2.7L29 4Z" fill="var(--accent)"/></svg>
+    <span>GramGrabber<em>Studio</em></span>
+  </div>
+</header>
+<div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
+
+<div class="app">
+  <aside class="side" id="sideNav">
+    <div class="brand">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M29 4 3 14.4l7.6 3.2L26 7 13.2 19.5l.5 7.5 4.4-5 6.3 2.7L29 4Z" fill="var(--accent)"/></svg>
+      <span>GramGrabber<em>Studio</em></span>
+    </div>
+    <nav aria-label="Main">
+      <button class="nav-btn active" data-view="channels">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v2H3V5Zm0 6h18v2H3v-2Zm0 6h12v2H3v-2Z"/></svg>
+        Channels
+      </button>
+      <button class="nav-btn" data-view="downloads">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6l3.8-3.8 1.4 1.4-6.2 6.2-6.2-6.2 1.4-1.4L10 13.6V3h2Zm-8 16h16v2H4v-2Z"/></svg>
+        Downloads <span class="badge" id="dlBadge" hidden>0</span>
+      </button>
+      <button class="nav-btn" data-view="library">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm6 4.5v7l6-3.5-6-3.5Z"/></svg>
+        Library
+      </button>
+    </nav>
+    <div class="side-bottom">
+      <button class="nav-btn" data-view="settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm9.4 4a7.4 7.4 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-2-1.2L16.5 3h-4l-.4 2.6a7.5 7.5 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7.4 7.4 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 2 1.2l.4 2.6h4l.4-2.6a7.5 7.5 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.06-.4.1-.8.1-1.2Z"/></svg>
+        Settings
+      </button>
+      <button class="conn" id="connStatus" title="Connection status">
+        <span class="dot dot-off"></span><span id="connText">Disconnected</span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Channels -->
+    <section class="view" id="view-channels">
+      <header class="view-head">
+        <h1>Channels</h1>
+        <input type="search" id="chSearch" placeholder="Filter channels…" autocomplete="off" aria-label="Filter channels">
+        <button class="btn btn-ghost" id="chRefresh">Refresh</button>
+      </header>
+      <div class="split">
+        <div class="ch-list" id="chList" role="listbox" aria-label="Your channels"></div>
+        <div class="vid-panel" id="vidPanel">
+          <div class="empty">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm6 4.5v7l6-3.5-6-3.5Z"/></svg>
+            <h3>Pick a channel</h3>
+            <p>Select a channel on the left to browse its videos. Hit ▶ to watch instantly or check videos to download them.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloads -->
+    <section class="view" id="view-downloads" hidden>
+      <header class="view-head">
+        <h1>Downloads</h1>
+        <span class="hint" id="dlSummary"></span>
+        <button class="btn btn-ghost push-right" id="dlClear" hidden>Clear finished</button>
+      </header>
+      <div id="jobList"></div>
+    </section>
+
+    <!-- Library -->
+    <section class="view" id="view-library" hidden>
+      <header class="view-head">
+        <h1>Library</h1>
+        <span class="hint" id="libSummary"></span>
+        <input type="search" id="libSearch" class="push-right" placeholder="Filter videos…" autocomplete="off" aria-label="Filter videos">
+        <button class="btn btn-ghost" id="libRefresh">Refresh</button>
+      </header>
+      <div id="libList"></div>
+    </section>
+
+    <!-- Settings -->
+    <section class="view" id="view-settings" hidden>
+      <header class="view-head"><h1>Settings</h1></header>
+      <form class="card form" id="settingsForm">
+        <h2>Telegram API credentials</h2>
+        <p class="hint">Create an application at <a href="https://my.telegram.org" target="_blank" rel="noopener">my.telegram.org</a> → API development tools. Credentials are stored locally in <code>~/.gramgrabber/config.json</code> and used only to talk to Telegram.</p>
+        <label>App ID <input type="text" id="setAppId" inputmode="numeric" placeholder="1234567" required></label>
+        <label>App Hash <input type="password" id="setAppHash" placeholder="your api_hash" required autocomplete="off"></label>
+        <label>Downloads folder <input type="text" id="setDir" placeholder="~/GramGrabber"></label>
+        <label>Simultaneous downloads (1–4)
+          <input type="number" id="setParallel" min="1" max="4" value="2">
+          <span class="hint">Applies after restarting the app.</span>
+        </label>
+        <div class="form-row">
+          <button class="btn btn-primary" type="submit">Save &amp; connect</button>
+          <button class="btn btn-ghost" type="button" id="logoutBtn">Log out of Telegram</button>
+          <button class="btn btn-ghost" type="button" id="quitBtn" title="Stops the local server">Quit Studio</button>
+        </div>
+        <p class="form-msg" id="settingsMsg" role="status"></p>
+      </form>
+    </section>
+  </main>
+</div>
+
+<!-- Auth overlay -->
+<div class="overlay" id="authOverlay" hidden>
+  <div class="card auth-card">
+    <div class="brand brand-lg">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M29 4 3 14.4l7.6 3.2L26 7 13.2 19.5l.5 7.5 4.4-5 6.3 2.7L29 4Z" fill="var(--accent)"/></svg>
+      <span>GramGrabber<em>Studio</em></span>
+    </div>
+
+    <div class="auth-step" id="auth-credentials" hidden>
+      <h2>Welcome — let's connect Telegram</h2>
+      <p class="hint">GramGrabber needs your own Telegram API credentials. Takes two minutes: log in at <a href="https://my.telegram.org" target="_blank" rel="noopener">my.telegram.org</a>, open <strong>API development tools</strong>, create an app, and copy the values here. They never leave this machine.</p>
+      <form id="credForm">
+        <label>App ID <input type="text" id="credAppId" inputmode="numeric" placeholder="1234567" required></label>
+        <label>App Hash <input type="password" id="credAppHash" placeholder="your api_hash" required autocomplete="off"></label>
+        <p class="hint err auth-err" hidden></p>
+        <button class="btn btn-primary" type="submit">Save &amp; connect</button>
+      </form>
+    </div>
+
+    <div class="auth-step" id="auth-connecting" hidden>
+      <div class="spinner"></div>
+      <h2>Connecting to Telegram…</h2>
+    </div>
+
+    <div class="auth-step" id="auth-phone" hidden>
+      <ol class="auth-dots" aria-label="Sign-in progress"><li class="on">Phone</li><li>Code</li><li>2FA</li></ol>
+      <h2>Sign in to Telegram</h2>
+      <p class="hint">Your phone number with country code. The confirmation code arrives <strong>inside the Telegram app</strong>.</p>
+      <form data-step="phone">
+        <label>Phone number <input type="tel" placeholder="+5511999999999" required></label>
+        <p class="hint err auth-err" hidden></p>
+        <button class="btn btn-primary" type="submit">Send code</button>
+      </form>
+    </div>
+
+    <div class="auth-step" id="auth-code" hidden>
+      <ol class="auth-dots" aria-label="Sign-in progress"><li class="done">Phone</li><li class="on">Code</li><li>2FA</li></ol>
+      <h2>Enter the code</h2>
+      <p class="hint">Check your Telegram app for the login code.</p>
+      <form data-step="code">
+        <label>Code <input type="text" inputmode="numeric" autocomplete="one-time-code" required></label>
+        <p class="hint err auth-err" hidden></p>
+        <button class="btn btn-primary" type="submit">Verify</button>
+      </form>
+    </div>
+
+    <div class="auth-step" id="auth-password" hidden>
+      <ol class="auth-dots" aria-label="Sign-in progress"><li class="done">Phone</li><li class="done">Code</li><li class="on">2FA</li></ol>
+      <h2>Two-step verification</h2>
+      <p class="hint">Your account has a 2FA password.</p>
+      <form data-step="password">
+        <label>Password <input type="password" required></label>
+        <p class="hint err auth-err" hidden></p>
+        <button class="btn btn-primary" type="submit">Sign in</button>
+      </form>
+    </div>
+
+    <div class="auth-step" id="auth-error" hidden>
+      <h2>Connection failed</h2>
+      <p class="hint err" id="authErrMsg"></p>
+      <div class="form-row">
+        <button class="btn btn-primary" id="authRetry">Try again</button>
+        <button class="btn btn-ghost" id="authEditCreds">Edit credentials</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Player overlay -->
+<div class="overlay player-overlay" id="playerOverlay" hidden>
+  <div class="player">
+    <header class="player-head">
+      <div class="player-meta">
+        <h3 id="playerTitle"></h3>
+        <p class="hint" id="playerSub"></p>
+      </div>
+      <span class="chip chip-count" id="playerCount"></span>
+      <button class="btn btn-ghost" id="closePlayer" title="Close (Esc)">✕ Close</button>
+    </header>
+    <div class="player-body">
+      <div class="player-main">
+        <div class="video-wrap" id="videoWrap">
+          <video id="playerVideo" autoplay playsinline></video>
+          <div class="buffering" id="buffering" hidden><div class="spinner"></div></div>
+          <div class="vctrl" id="vctrl">
+            <div class="vprog" id="vprog" role="slider" aria-label="Seek" tabindex="0">
+              <div class="vbuf" id="vbuf"></div>
+              <div class="vplayed" id="vplayed"><i class="vknob"></i></div>
+            </div>
+            <div class="vbtns">
+              <button class="vbtn" id="vPlay" aria-label="Play/pause (Space)">
+                <svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13l11-6.5-11-6.5Z"/></svg>
+                <svg viewBox="0 0 24 24" class="i-pause" hidden><path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z"/></svg>
+              </button>
+              <div class="vvol">
+                <button class="vbtn" id="vMute" aria-label="Mute (M)">
+                  <svg viewBox="0 0 24 24" class="i-vol"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a3.5 3.5 0 0 0-2-3.2v6.4a3.5 3.5 0 0 0 2-3.2Zm-2-7.5v2.1a5.5 5.5 0 0 1 0 10.8v2.1a7.5 7.5 0 0 0 0-15Z"/></svg>
+                  <svg viewBox="0 0 24 24" class="i-muted" hidden><path d="M4 9v6h4l5 4V5L8 9H4Zm17 .8-1.3-1.3-2.2 2.2-2.2-2.2L14 9.8l2.2 2.2-2.2 2.2 1.3 1.3 2.2-2.2 2.2 2.2 1.3-1.3-2.2-2.2L21 9.8Z"/></svg>
+                </button>
+                <input type="range" id="vVol" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+              </div>
+              <span class="vtime" id="vTime">0:00 / 0:00</span>
+              <span class="push-right"></span>
+              <div class="vspeed">
+                <button class="vbtn vbtn-text" id="vSpeedBtn" aria-label="Playback speed" aria-haspopup="menu">1×</button>
+                <div class="vspeed-menu" id="vSpeedMenu" role="menu" hidden></div>
+              </div>
+              <button class="vbtn" id="vTheater" aria-label="Cinema mode (T)" title="Cinema mode (T)">
+                <svg viewBox="0 0 24 24"><path d="M3 6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6Zm2 1v10h14V7H5Z"/></svg>
+              </button>
+              <button class="vbtn" id="vPip" aria-label="Picture-in-picture (I)" title="Picture-in-picture (I)">
+                <svg viewBox="0 0 24 24"><path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5Zm2 1v12h14V6H5Zm7 5h5v4h-5v-4Z"/></svg>
+              </button>
+              <button class="vbtn" id="vFull" aria-label="Fullscreen (F)" title="Fullscreen (F)">
+                <svg viewBox="0 0 24 24"><path d="M4 4h6v2H6v4H4V4Zm10 0h6v6h-2V6h-4V4ZM4 14h2v4h4v2H4v-6Zm14 0h2v6h-6v-2h4v-4Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="player-bar">
+          <button class="btn btn-ghost" id="prevBtn" title="Previous (Shift+P)">⏮ Prev</button>
+          <button class="btn btn-ghost" id="nextBtn" title="Next (Shift+N)">Next ⏭</button>
+          <button class="btn btn-ghost pl-toggle" id="plToggle" aria-controls="playlist" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="currentColor"><path d="M3 6h18v2H3V6Zm0 5h12v2H3v-2Zm0 5h12v2H3v-2Zm15-3.5 4 3-4 3v-6Z"/></svg>
+            Playlist
+          </button>
+          <label class="autoplay"><input type="checkbox" id="autoNext" checked> Auto-play next</label>
+          <p class="hint kbd-hint push-right"><kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> 10s · <kbd>↑</kbd><kbd>↓</kbd> volume · <kbd>M</kbd> mute · <kbd>I</kbd> PiP · <kbd>T</kbd> cinema · <kbd>F</kbd> fullscreen</p>
+        </div>
+      </div>
+      <div class="drawer-scrim" id="plScrim" aria-hidden="true"></div>
+      <aside class="playlist" id="playlist" aria-label="Playlist"></aside>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
