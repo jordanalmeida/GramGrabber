@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GramGrabber — Free Open-Source Telegram Channel Video Downloader</title>
-<meta name="description" content="Download videos from Telegram channels at full speed. GramGrabber is a free, open-source downloader with 8 parallel threads, resumable downloads and an interactive channel picker. No ads, no limits.">
+<meta name="description" content="Download videos from Telegram channels at full speed — or watch them instantly without downloading. GramGrabber is a free, open-source app for Mac, Windows and Linux with a built-in player, resumable parallel downloads and no limits.">
 <link rel="canonical" href="https://jordanalmeida.github.io/GramGrabber/">
 <link rel="alternate" hreflang="en" href="https://jordanalmeida.github.io/GramGrabber/">
 <link rel="alternate" hreflang="pt-BR" href="https://jordanalmeida.github.io/GramGrabber/pt/">
@@ -16,7 +16,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="GramGrabber">
 <meta property="og:title" content="GramGrabber — Free Open-Source Telegram Channel Video Downloader">
-<meta property="og:description" content="Download every video from a Telegram channel to your disk. 8 parallel threads, resumable downloads, open source. Free forever.">
+<meta property="og:description" content="Download every video from a Telegram channel — or watch instantly without downloading. Visual app for Mac/Windows/Linux with built-in player. Open source, free forever.">
 <meta property="og:url" content="https://jordanalmeida.github.io/GramGrabber/">
 <meta property="og:image" content="https://jordanalmeida.github.io/GramGrabber/og.png">
 <meta property="og:image:width" content="1200">
@@ -38,10 +38,11 @@
   "name": "GramGrabber",
   "operatingSystem": "macOS, Linux, Windows",
   "applicationCategory": "UtilitiesApplication",
-  "description": "A free, open-source CLI tool to download videos from Telegram channels with 8 parallel threads and resumable downloads.",
+  "description": "A free, open-source app to download videos from Telegram channels with parallel resumable downloads, instant streaming playback and a built-in player. Ships as a visual app (Studio) and a CLI.",
   "url": "https://jordanalmeida.github.io/GramGrabber/",
-  "downloadUrl": "https://github.com/jordanalmeida/GramGrabber",
-  "softwareRequirements": "Go 1.25+, Telegram API credentials",
+  "downloadUrl": "https://github.com/jordanalmeida/GramGrabber/releases/latest",
+  "softwareVersion": "0.1.0",
+  "softwareRequirements": "Telegram API credentials",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "isAccessibleForFree": true,
   "license": "https://github.com/jordanalmeida/GramGrabber",
@@ -53,14 +54,12 @@
   "@context": "https://schema.org",
   "@type": "HowTo",
   "name": "How to download videos from a Telegram channel with GramGrabber",
-  "description": "Get Telegram API credentials, build GramGrabber and download every video from a channel in four steps.",
-  "totalTime": "PT10M",
-  "tool": [{ "@type": "HowToTool", "name": "Go 1.25+" }],
+  "description": "Install GramGrabber Studio, connect your Telegram account and download or stream every video from a channel in three steps.",
+  "totalTime": "PT3M",
   "step": [
     { "@type": "HowToStep", "position": 1, "name": "Get your Telegram API credentials", "text": "Log in at my.telegram.org, open API development tools and create an application to receive your api_id and api_hash.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-1" },
-    { "@type": "HowToStep", "position": 2, "name": "Clone and configure", "text": "Clone the GramGrabber repository, copy env.example to .env and fill in APP_ID and APP_HASH.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-2" },
-    { "@type": "HowToStep", "position": 3, "name": "Build", "text": "Run go mod tidy and go build -o gram-grabber to compile the binary.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-3" },
-    { "@type": "HowToStep", "position": 4, "name": "Log in and download", "text": "Run ./gram-grabber, sign in to Telegram, pick a channel from the interactive menu and watch videos land in the downloads folder.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-4" }
+    { "@type": "HowToStep", "position": 2, "name": "Install GramGrabber Studio", "text": "Download the installer for macOS or Windows, open it and paste your credentials on the welcome screen.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-2" },
+    { "@type": "HowToStep", "position": 3, "name": "Sign in and grab videos", "text": "Sign in to Telegram in the browser interface, pick any channel you follow, then download videos at full speed or hit play to stream them instantly.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-3" }
   ]
 }
 </script>
@@ -72,9 +71,10 @@
     { "@type": "Question", "name": "Is GramGrabber really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. GramGrabber is free and open source. There are no ads, no premium tier, no download limits and no accounts. You can read every line of code on GitHub." } },
     { "@type": "Question", "name": "Is it safe to use with my Telegram account?", "acceptedAnswer": { "@type": "Answer", "text": "GramGrabber talks directly to Telegram through the official MTProto API using your own API credentials. Nothing passes through third-party servers, and your session stays on your machine." } },
     { "@type": "Question", "name": "Can I resume an interrupted download?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. GramGrabber detects partially downloaded files and offers to resume exactly where the transfer stopped." } },
+    { "@type": "Question", "name": "Can I watch videos without downloading them?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. In GramGrabber Studio, hit play on any video and it streams straight from Telegram with seeking — nothing is saved to disk unless you choose to download." } },
     { "@type": "Question", "name": "Does it work with private channels?", "acceptedAnswer": { "@type": "Answer", "text": "It works with any channel your Telegram account can access, including private channels you are a member of." } },
     { "@type": "Question", "name": "Why does it need my own api_id and api_hash?", "acceptedAnswer": { "@type": "Answer", "text": "Telegram requires every MTProto client to identify itself with API credentials. Using your own keeps the connection between you and Telegram only — GramGrabber never sees or stores them anywhere else." } },
-    { "@type": "Question", "name": "Is there a graphical version?", "acceptedAnswer": { "@type": "Answer", "text": "A desktop app with a graphical interface is on the roadmap. Today GramGrabber ships as a fast command-line tool for macOS, Linux and Windows." } }
+    { "@type": "Question", "name": "Is there a graphical version?", "acceptedAnswer": { "@type": "Answer", "text": "Yes — GramGrabber Studio, with installers for macOS and Windows (plus a Linux binary): browse channels visually, download with live progress and watch videos in a built-in player with speed control, picture-in-picture and cinema mode. The classic CLI is also included." } }
   ]
 }
 </script>
@@ -266,6 +266,14 @@ section{ padding:clamp(4rem, 3rem + 4vw, 7rem) 0; position:relative }
 .mtproto .link-line{ width:2px; height:34px;
   background:repeating-linear-gradient(180deg, var(--accent) 0 5px, transparent 5px 10px) }
 .mtproto .lbl{ font-size:.75rem; color:var(--muted) }
+.stream-demo{ display:grid; gap:.8rem; color:var(--muted) }
+.stream-demo .sd-title{ color:var(--ink); display:flex; gap:.7rem; align-items:baseline }
+.stream-demo .sd-live{ font-size:.68rem; font-weight:700; letter-spacing:.05em;
+  padding:.16rem .5rem; border-radius:6px; background:oklch(32% 0.1 152 / .55);
+  color:var(--success) }
+.stream-demo .sd-controls{ display:flex; gap:1.1rem; align-items:center; font-size:.95rem;
+  color:oklch(88% 0.02 262) }
+.stream-demo .sd-gap{ flex:1 }
 
 /* ============ tutorial ============ */
 .tutorial{ background:linear-gradient(180deg, var(--bg) 0%, oklch(10% 0.03 262) 50%, var(--bg) 100%) }
@@ -297,6 +305,10 @@ section{ padding:clamp(4rem, 3rem + 4vw, 7rem) 0; position:relative }
   border:1px solid oklch(38% 0.09 262 / .6); border-radius:10px; padding:.85rem 1.1rem;
   font-size:.92rem; color:var(--muted) }
 .step-tip svg{ flex:none; width:18px; height:18px; margin-top:.22rem; stroke:var(--accent) }
+.cli-alt{ max-width:820px; margin-top:2.5rem; padding-top:2rem;
+  border-top:1px solid color-mix(in oklab, var(--line) 55%, transparent) }
+.cli-alt h3{ margin-bottom:.4rem }
+.cli-alt .hint{ margin-bottom:.4rem }
 
 /* ============ faq ============ */
 .faq-list{ max-width:820px; display:grid; gap:.8rem }
@@ -377,22 +389,26 @@ footer{ border-top:1px solid var(--line); padding:2.2rem 0 2.6rem;
     <div>
       <div class="hero-badges">
         <span class="pill"><span class="dot"></span>Free &amp; open source</span>
-        <span class="pill">CLI · Go</span>
-        <span class="pill">macOS · Linux · Windows</span>
+        <span class="pill">Visual app + CLI</span>
+        <span class="pill">macOS · Windows · Linux</span>
       </div>
       <h1>Download Telegram channel videos <em>at full speed</em>.</h1>
-      <p class="hero-sub">GramGrabber pulls every video from a Telegram channel straight to your disk — 8 parallel threads, resumable downloads, an interactive channel picker. No ads, no size limits, no middleman servers. Just your machine and Telegram.</p>
+      <p class="hero-sub">GramGrabber pulls every video from a Telegram channel straight to your disk — or streams it instantly, no download needed. Parallel resumable downloads, a built-in player, no ads, no size limits, no middleman servers. Just your machine and Telegram.</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="#tutorial">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6l3.8-3.8 1.4 1.4-6.2 6.2-6.2-6.2 1.4-1.4L10 13.6V3h2Zm-8 16h16v2H4v-2Z"/></svg>
-          Get started in 10 minutes
+        <a class="btn btn-primary" href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/GramGrabber-Studio-mac.dmg">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.7c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.86-1.6 0-3.1 1-4 2.4-1.7 3-0.4 7.4 1.2 9.8.8 1.2 1.8 2.5 3.1 2.4 1.2-.05 1.7-.8 3.2-.8s1.9.8 3.2.77c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8-.03-.01-2.6-1-2.6-3.9ZM14 5.6c.7-.8 1.1-1.9 1-3-1 .04-2.1.65-2.8 1.4-.6.7-1.2 1.8-1 2.9 1.1.1 2.2-.5 2.8-1.4Z"/></svg>
+          Download for macOS
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/gram-grabber-studio_windows.exe">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7H3v5.9ZM11.5 4.2 21 3v8.5h-9.5V4.2Zm0 15.6L21 21v-8.5h-9.5v7.3Z"/></svg>
+          Download for Windows
         </a>
         <a class="btn btn-ghost" href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-          Star on GitHub
+          GitHub
         </a>
       </div>
-      <p class="hero-note">Built with Go and the official Telegram API. <code>git clone → go build → done</code></p>
+      <p class="hero-note">Linux and CLI builds on the <a href="https://github.com/jordanalmeida/GramGrabber/releases/latest" rel="noopener">releases page</a>. Prefer the terminal? <code>git clone → go build → done</code></p>
     </div>
 
     <div class="term reveal" aria-label="GramGrabber terminal demo">
@@ -457,8 +473,20 @@ footer{ border-top:1px solid var(--line); padding:2.2rem 0 2.6rem;
 
     <div class="feat reveal">
       <div>
+        <h3>Watch instantly — no download needed</h3>
+        <p>Hit ▶ on any video and it <strong>streams straight from Telegram</strong> in GramGrabber Studio's built-in player: seeking, speed control up to 2×, picture-in-picture, cinema mode and it remembers where you stopped. Nothing touches your disk unless you choose to download.</p>
+      </div>
+      <div class="feat-visual stream-demo" role="img" aria-label="Built-in player streaming a video with progress and controls">
+        <div class="sd-title">▶ lecture_044.mp4 <span class="sd-live">STREAMING</span></div>
+        <div class="thread"><span class="tno">▶</span><span class="track"><span class="fill" style="--w:34%"></span></span><span class="pct">17:42</span></div>
+        <div class="sd-controls"><span>⏮</span><span>⏯</span><span>⏭</span><span class="sd-gap"></span><span>1.5×</span><span>PiP</span><span>⛶</span></div>
+      </div>
+    </div>
+
+    <div class="feat reveal">
+      <div>
         <h3>Pick a channel like picking a playlist</h3>
-        <p>No channel IDs to hunt down, no URLs to paste. GramGrabber lists <strong>every channel your account follows</strong> in an interactive menu — arrow keys, enter, downloading.</p>
+        <p>No channel IDs to hunt down, no URLs to paste. GramGrabber lists <strong>every channel your account follows</strong> — a visual browser with search in Studio, an interactive menu in the CLI.</p>
       </div>
       <div class="feat-visual picker-demo" role="img" aria-label="Interactive channel selection menu">
         <div class="sel"><span>› Tech Talks Archive</span><span class="count">1,204 videos</span></div>
@@ -488,7 +516,7 @@ footer{ border-top:1px solid var(--line); padding:2.2rem 0 2.6rem;
 <section id="tutorial" class="tutorial" aria-labelledby="tutorial-h">
   <div class="wrap">
     <h2 id="tutorial-h" class="reveal">How to download videos from a Telegram channel</h2>
-    <p class="section-lede reveal">Four steps, about ten minutes, one-time setup. After this, downloading a whole channel is a single command.</p>
+    <p class="section-lede reveal">With GramGrabber Studio it takes about three minutes, once. After that, grabbing (or just watching) a whole channel is a couple of clicks.</p>
 
     <div class="steps">
       <div class="step reveal" id="step-1">
@@ -501,31 +529,28 @@ footer{ border-top:1px solid var(--line); padding:2.2rem 0 2.6rem;
       </div>
 
       <div class="step reveal" id="step-2">
-        <h3>Clone and configure</h3>
-        <p>Grab the source and drop your credentials into a local <code>.env</code> file:</p>
-        <div class="codeblock"><pre><code>git clone https://github.com/jordanalmeida/GramGrabber.git
-cd GramGrabber
-cp env.example .env</code></pre><button class="copy-btn" type="button" aria-label="Copy commands">Copy</button></div>
-        <p>Then edit <code>.env</code>:</p>
-        <div class="codeblock"><pre><code>APP_ID=1234567
-APP_HASH=your_api_hash_here</code></pre><button class="copy-btn" type="button" aria-label="Copy .env template">Copy</button></div>
+        <h3>Install GramGrabber Studio</h3>
+        <p>Download for <a href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/GramGrabber-Studio-mac.dmg">macOS</a> (drag to Applications) or <a href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/gram-grabber-studio_windows.exe">Windows</a>, open it and the interface appears in your browser. Paste your <code>api_id</code> and <code>api_hash</code> on the welcome screen — they're stored locally and used only to talk to Telegram.</p>
+        <div class="step-tip">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          <span>macOS will warn about an unidentified developer the first time (the app isn't notarized) — right-click the app and choose <strong>Open</strong>, once.</span>
+        </div>
       </div>
 
       <div class="step reveal" id="step-3">
-        <h3>Build the binary</h3>
-        <p>You need <a href="https://go.dev/dl/" rel="noopener">Go 1.25 or newer</a>. Two commands and you have a native executable:</p>
-        <div class="codeblock"><pre><code>go mod tidy
-go build -o gram-grabber .</code></pre><button class="copy-btn" type="button" aria-label="Copy build commands">Copy</button></div>
+        <h3>Sign in, pick a channel, download — or just watch</h3>
+        <p>Sign in to Telegram (phone → code), pick any channel you follow and you'll see every video with size and duration. Select what you want and hit <strong>Download</strong> — 8 parallel threads, live progress, resume after interruptions — or press <strong>▶</strong> to stream it instantly in the built-in player. Downloads land in your <strong>Library</strong>, organized by channel.</p>
       </div>
+    </div>
 
-      <div class="step reveal" id="step-4">
-        <h3>Log in, pick a channel, download</h3>
-        <p>Run it. The first time, GramGrabber signs you into Telegram (code arrives in the app). Then choose any channel from the menu and it starts pulling videos into the <code>downloads/</code> folder.</p>
-        <div class="codeblock"><pre><code>./gram-grabber</code></pre><button class="copy-btn" type="button" aria-label="Copy run command">Copy</button></div>
-        <div class="codeblock"><pre><code><span class="cm"># interrupted? just run it again —</span>
-<span class="cm"># it resumes right where it stopped</span>
-./gram-grabber   <span class="cs"># ↻ resuming lecture_044.mp4 at 97%</span></code></pre><button class="copy-btn" type="button" aria-label="Copy resume command">Copy</button></div>
-      </div>
+    <div class="cli-alt reveal">
+      <h3 id="cli">Prefer the terminal? The CLI in one go</h3>
+      <p class="hint">Same engine, no interface. Needs <a href="https://go.dev/dl/" rel="noopener">Go 1.25+</a>; credentials go in a local <code>.env</code>:</p>
+      <div class="codeblock"><pre><code>git clone https://github.com/jordanalmeida/GramGrabber.git
+cd GramGrabber
+cp env.example .env    <span class="cm"># fill in APP_ID and APP_HASH</span>
+go build -o gram-grabber .
+./gram-grabber         <span class="cs"># sign in, pick a channel, done</span></code></pre><button class="copy-btn" type="button" aria-label="Copy CLI commands">Copy</button></div>
     </div>
   </div>
 </section>
@@ -548,6 +573,10 @@ go build -o gram-grabber .</code></pre><button class="copy-btn" type="button" ar
         <div class="faq-a"><p>Yes. GramGrabber detects partially downloaded files and offers to continue exactly where the transfer stopped — even after a crash, a network drop or a reboot.</p></div>
       </details>
       <details class="faq-item reveal">
+        <summary>Can I watch videos without downloading them?</summary>
+        <div class="faq-a"><p>Yes. In GramGrabber Studio, hit ▶ on any video and it streams straight from Telegram with seeking, speed control and picture-in-picture — nothing is saved to disk unless you choose to download.</p></div>
+      </details>
+      <details class="faq-item reveal">
         <summary>Does it work with private channels?</summary>
         <div class="faq-a"><p>It works with any channel your Telegram account can access, including private channels you're a member of. It cannot (and will not) access channels you don't belong to.</p></div>
       </details>
@@ -557,7 +586,7 @@ go build -o gram-grabber .</code></pre><button class="copy-btn" type="button" ar
       </details>
       <details class="faq-item reveal">
         <summary>Is there a graphical version?</summary>
-        <div class="faq-a"><p>A desktop app with a graphical interface is on the roadmap. Today GramGrabber ships as a fast CLI for macOS, Linux and Windows — <a href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">watch the repo</a> to be notified when the GUI lands.</p></div>
+        <div class="faq-a"><p>Yes — <strong>GramGrabber Studio</strong>, with installers for <a href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/GramGrabber-Studio-mac.dmg">macOS</a> and <a href="https://github.com/jordanalmeida/GramGrabber/releases/latest/download/gram-grabber-studio_windows.exe">Windows</a> (plus a Linux binary): browse channels visually, download with live progress and watch videos in a built-in player with speed control, picture-in-picture and cinema mode. The classic CLI is also included.</p></div>
       </details>
     </div>
   </div>
