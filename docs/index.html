@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GramGrabber — Free Open-Source Telegram Channel Video Downloader</title>
+<meta name="description" content="Download videos from Telegram channels at full speed. GramGrabber is a free, open-source downloader with 8 parallel threads, resumable downloads and an interactive channel picker. No ads, no limits.">
+<link rel="canonical" href="https://jordanalmeida.github.io/GramGrabber/">
+<link rel="alternate" hreflang="en" href="https://jordanalmeida.github.io/GramGrabber/">
+<link rel="alternate" hreflang="pt-BR" href="https://jordanalmeida.github.io/GramGrabber/pt/">
+<link rel="alternate" hreflang="x-default" href="https://jordanalmeida.github.io/GramGrabber/">
+<meta name="theme-color" content="#0a0d1c">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GramGrabber">
+<meta property="og:title" content="GramGrabber — Free Open-Source Telegram Channel Video Downloader">
+<meta property="og:description" content="Download every video from a Telegram channel to your disk. 8 parallel threads, resumable downloads, open source. Free forever.">
+<meta property="og:url" content="https://jordanalmeida.github.io/GramGrabber/">
+<meta property="og:image" content="https://jordanalmeida.github.io/GramGrabber/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="pt_BR">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GramGrabber — Free Open-Source Telegram Channel Video Downloader">
+<meta name="twitter:description" content="Download every video from a Telegram channel to your disk. 8 parallel threads, resumable, open source.">
+<meta name="twitter:image" content="https://jordanalmeida.github.io/GramGrabber/og.png">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "GramGrabber",
+  "operatingSystem": "macOS, Linux, Windows",
+  "applicationCategory": "UtilitiesApplication",
+  "description": "A free, open-source CLI tool to download videos from Telegram channels with 8 parallel threads and resumable downloads.",
+  "url": "https://jordanalmeida.github.io/GramGrabber/",
+  "downloadUrl": "https://github.com/jordanalmeida/GramGrabber",
+  "softwareRequirements": "Go 1.25+, Telegram API credentials",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isAccessibleForFree": true,
+  "license": "https://github.com/jordanalmeida/GramGrabber",
+  "author": { "@type": "Person", "name": "Jordan Almeida", "url": "https://github.com/jordanalmeida" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to download videos from a Telegram channel with GramGrabber",
+  "description": "Get Telegram API credentials, build GramGrabber and download every video from a channel in four steps.",
+  "totalTime": "PT10M",
+  "tool": [{ "@type": "HowToTool", "name": "Go 1.25+" }],
+  "step": [
+    { "@type": "HowToStep", "position": 1, "name": "Get your Telegram API credentials", "text": "Log in at my.telegram.org, open API development tools and create an application to receive your api_id and api_hash.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-1" },
+    { "@type": "HowToStep", "position": 2, "name": "Clone and configure", "text": "Clone the GramGrabber repository, copy env.example to .env and fill in APP_ID and APP_HASH.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-2" },
+    { "@type": "HowToStep", "position": 3, "name": "Build", "text": "Run go mod tidy and go build -o gram-grabber to compile the binary.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-3" },
+    { "@type": "HowToStep", "position": 4, "name": "Log in and download", "text": "Run ./gram-grabber, sign in to Telegram, pick a channel from the interactive menu and watch videos land in the downloads folder.", "url": "https://jordanalmeida.github.io/GramGrabber/#step-4" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is GramGrabber really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. GramGrabber is free and open source. There are no ads, no premium tier, no download limits and no accounts. You can read every line of code on GitHub." } },
+    { "@type": "Question", "name": "Is it safe to use with my Telegram account?", "acceptedAnswer": { "@type": "Answer", "text": "GramGrabber talks directly to Telegram through the official MTProto API using your own API credentials. Nothing passes through third-party servers, and your session stays on your machine." } },
+    { "@type": "Question", "name": "Can I resume an interrupted download?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. GramGrabber detects partially downloaded files and offers to resume exactly where the transfer stopped." } },
+    { "@type": "Question", "name": "Does it work with private channels?", "acceptedAnswer": { "@type": "Answer", "text": "It works with any channel your Telegram account can access, including private channels you are a member of." } },
+    { "@type": "Question", "name": "Why does it need my own api_id and api_hash?", "acceptedAnswer": { "@type": "Answer", "text": "Telegram requires every MTProto client to identify itself with API credentials. Using your own keeps the connection between you and Telegram only — GramGrabber never sees or stores them anywhere else." } },
+    { "@type": "Question", "name": "Is there a graphical version?", "acceptedAnswer": { "@type": "Answer", "text": "A desktop app with a graphical interface is on the roadmap. Today GramGrabber ships as a fast command-line tool for macOS, Linux and Windows." } }
+  ]
+}
+</script>
+
+<style>
+/* ============ tokens ============ */
+:root{
+  --bg: oklch(11.5% 0.03 262);
+  --bg-deep: oklch(8% 0.025 262);
+  --surface: oklch(16% 0.035 262);
+  --surface-2: oklch(20.5% 0.042 262);
+  --line: oklch(29% 0.045 262);
+  --ink: oklch(95% 0.012 262);
+  --muted: oklch(76% 0.035 262);
+  --primary: oklch(55% 0.2 262);
+  --primary-deep: oklch(46% 0.19 262);
+  --primary-bright: oklch(73% 0.145 262);
+  --accent: oklch(83% 0.115 200);
+  --success: oklch(80% 0.16 152);
+  --amber: oklch(83% 0.13 85);
+  --radius: 12px;
+  --z-nav: 10;
+  --z-skip: 20;
+  --font-sans: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0 }
+html{ scroll-behavior:smooth; scroll-padding-top:5.5rem }
+@media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto } }
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--font-sans); font-size:1.0625rem; line-height:1.7;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+img,svg,canvas{ max-width:100%; display:block }
+a{ color:var(--primary-bright); text-decoration-thickness:1px; text-underline-offset:3px }
+a:hover{ color:var(--accent) }
+h1,h2,h3{ line-height:1.12; text-wrap:balance; font-weight:750;
+  font-variation-settings:"wdth" 118; letter-spacing:-0.02em }
+h2{ font-size:clamp(1.8rem, 1.1rem + 3vw, 2.9rem); margin-bottom:1rem }
+h3{ font-size:1.22rem; font-variation-settings:"wdth" 108 }
+p{ max-width:68ch; text-wrap:pretty }
+code,kbd{ font-family:var(--font-mono); font-size:.92em }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px }
+::selection{ background:var(--primary); color:#fff }
+
+.skip-link{ position:fixed; top:-4rem; left:1rem; z-index:var(--z-skip);
+  background:var(--primary); color:#fff; padding:.6rem 1rem; border-radius:8px;
+  transition:top .2s ease-out }
+.skip-link:focus{ top:1rem }
+
+.wrap{ width:min(1120px, 100% - 3rem); margin-inline:auto }
+@media (max-width:640px){ .wrap{ width:calc(100% - 2.5rem) } }
+
+/* ============ nav ============ */
+.nav{
+  position:fixed; inset:0 0 auto 0; z-index:var(--z-nav);
+  background:color-mix(in oklab, var(--bg-deep) 82%, transparent);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid color-mix(in oklab, var(--line) 60%, transparent);
+}
+.nav-inner{ display:flex; align-items:center; gap:1.6rem; padding:.85rem 0 }
+.brand{ display:flex; align-items:center; gap:.55rem; font-weight:800; font-size:1.1rem;
+  font-variation-settings:"wdth" 120; color:var(--ink); text-decoration:none; letter-spacing:-0.01em }
+.brand svg{ width:26px; height:26px }
+.nav-links{ display:flex; gap:1.4rem; margin-left:auto; align-items:center }
+.nav-links a{ color:var(--muted); text-decoration:none; font-size:.95rem; font-weight:500 }
+.nav-links a:hover{ color:var(--ink) }
+.lang-switch{ border:1px solid var(--line); border-radius:999px; padding:.28rem .8rem;
+  font-size:.85rem !important; color:var(--ink) !important; white-space:nowrap }
+.lang-switch:hover{ border-color:var(--primary-bright) }
+.nav-gh{ display:inline-flex; align-items:center; gap:.45rem }
+.nav-gh svg{ width:18px; height:18px; fill:currentColor }
+@media (max-width:820px){ .nav-links a:not(.lang-switch):not(.nav-gh){ display:none } }
+
+/* ============ hero ============ */
+.hero{ position:relative; min-height:100svh; display:flex; flex-direction:column;
+  justify-content:center; padding:7.5rem 0 4rem; isolation:isolate; overflow:clip;
+  background:linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 78%, var(--bg) 100%) }
+#sky{ position:absolute; inset:0; z-index:-2; width:100%; height:100% }
+.hero-glow{ position:absolute; z-index:-1; width:min(900px,120vw); aspect-ratio:1.6;
+  left:50%; top:-18%; transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, oklch(46% 0.19 262 / .32), transparent 65%);
+  pointer-events:none }
+.hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:3.5rem; align-items:center }
+.hero-grid > *{ min-width:0 }
+@media (max-width:920px){ .hero-grid{ grid-template-columns:1fr; gap:2.8rem } }
+.hero h1{
+  font-size:clamp(2.5rem, 1.2rem + 5.4vw, 4.6rem);
+  font-weight:800; letter-spacing:-0.028em; margin:1.1rem 0 1.3rem;
+}
+.hero h1 em{ font-style:normal; color:var(--accent) }
+.hero-sub{ font-size:clamp(1.05rem, 1rem + .35vw, 1.22rem); color:var(--muted); max-width:52ch }
+.hero-badges{ display:flex; flex-wrap:wrap; gap:.6rem; align-items:center }
+.pill{ display:inline-flex; align-items:center; gap:.42rem; border:1px solid var(--line);
+  border-radius:999px; padding:.32rem .85rem; font-size:.84rem; font-weight:600; color:var(--muted);
+  background:color-mix(in oklab, var(--surface) 55%, transparent) }
+.pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--success) }
+.cta-row{ display:flex; flex-wrap:wrap; gap:.9rem; margin-top:2.1rem; align-items:center }
+.btn{ display:inline-flex; align-items:center; gap:.55rem; font-weight:650; font-size:1rem;
+  padding:.85rem 1.55rem; border-radius:10px; text-decoration:none; line-height:1;
+  transition:transform .18s cubic-bezier(.22,1,.36,1), box-shadow .18s ease-out, background .18s ease-out }
+.btn-primary{ background:var(--primary); color:#fff;
+  box-shadow:0 6px 22px oklch(46% 0.19 262 / .45), inset 0 1px 0 oklch(100% 0 0 / .18) }
+.btn-primary:hover{ background:var(--primary-deep); color:#fff; transform:translateY(-2px);
+  box-shadow:0 10px 30px oklch(46% 0.19 262 / .55), inset 0 1px 0 oklch(100% 0 0 / .18) }
+.btn-ghost{ border:1px solid var(--line); color:var(--ink);
+  background:color-mix(in oklab, var(--surface) 45%, transparent) }
+.btn-ghost:hover{ border-color:var(--primary-bright); color:var(--ink); transform:translateY(-2px) }
+.btn svg{ width:19px; height:19px; fill:currentColor }
+.hero-note{ font-size:.86rem; color:var(--muted); margin-top:1rem }
+.hero-note code{ background:var(--surface); border:1px solid var(--line);
+  padding:.15rem .45rem; border-radius:6px }
+
+/* ============ terminal ============ */
+.term{ background:oklch(13% 0.028 262 / .92); border:1px solid var(--line);
+  border-radius:14px; overflow:hidden; font-family:var(--font-mono); font-size:.86rem;
+  box-shadow:0 30px 80px oklch(5% 0.02 262 / .6), 0 0 0 1px oklch(100% 0 0 / .03);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px) }
+.term-bar{ display:flex; align-items:center; gap:.45rem; padding:.7rem 1rem;
+  border-bottom:1px solid var(--line); background:oklch(17% 0.03 262 / .8) }
+.term-bar i{ width:11px; height:11px; border-radius:50%; background:var(--line) }
+.term-bar i:nth-child(1){ background:oklch(65% 0.19 25) }
+.term-bar i:nth-child(2){ background:oklch(80% 0.14 90) }
+.term-bar i:nth-child(3){ background:oklch(72% 0.17 150) }
+.term-title{ margin-left:auto; margin-right:auto; color:var(--muted); font-size:.76rem;
+  transform:translateX(-1.6rem) }
+.term-body{ padding:1.1rem 1.2rem 1.3rem; min-height:19.5rem; line-height:1.75;
+  color:oklch(88% 0.02 262); overflow-x:auto }
+@media (max-width:480px){ .term{ font-size:.7rem } .term-body{ min-height:16rem } }
+.term-body .tp{ color:var(--muted) } /* prompt */
+.term-body .tg{ color:var(--success) }
+.term-body .tc{ color:var(--accent) }
+.term-body .ta{ color:var(--amber) }
+.term-body .bar-bg{ color:oklch(38% 0.05 262) }
+.term-caret{ display:inline-block; width:.55em; height:1.05em; background:var(--accent);
+  vertical-align:text-bottom; animation:blink 1.06s steps(1) infinite }
+@keyframes blink{ 50%{ opacity:0 } }
+@media (prefers-reduced-motion: reduce){ .term-caret{ animation:none } }
+
+/* ============ flight path divider ============ */
+.flight{ position:relative; height:150px; margin:-1px 0; pointer-events:none }
+.flight svg{ position:absolute; inset:0; width:100%; height:100% }
+.flight .path{ fill:none; stroke:oklch(55% 0.16 240 / .55); stroke-width:1.6;
+  stroke-dasharray:7 9; stroke-linecap:round }
+.flight .plane{ fill:var(--accent) }
+
+/* ============ sections ============ */
+section{ padding:clamp(4rem, 3rem + 4vw, 7rem) 0; position:relative }
+.section-lede{ color:var(--muted); font-size:1.1rem; max-width:58ch; margin-bottom:3rem }
+
+/* features — alternating rows */
+.feat{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(2rem,4vw,4.5rem);
+  align-items:center; padding:clamp(2.2rem,3vw,3.4rem) 0 }
+.feat + .feat{ border-top:1px solid color-mix(in oklab, var(--line) 55%, transparent) }
+.feat:nth-child(even) .feat-visual{ order:-1 }
+@media (max-width:820px){
+  .feat{ grid-template-columns:1fr }
+  .feat:nth-child(even) .feat-visual{ order:0 }
+}
+.feat h3{ font-size:clamp(1.4rem,1.1rem + 1.4vw,2rem); margin-bottom:.8rem }
+.feat p{ color:var(--muted) }
+.feat p strong{ color:var(--ink) }
+.feat-visual{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  padding:1.6rem; font-family:var(--font-mono); font-size:.85rem; overflow:hidden }
+.threads{ display:grid; gap:.7rem }
+.thread{ display:grid; grid-template-columns:auto 1fr auto; gap:.8rem; align-items:center;
+  color:var(--muted) }
+.thread .tno{ color:var(--accent); font-size:.78rem }
+.thread .track{ height:8px; border-radius:99px; background:oklch(26% 0.04 262); overflow:hidden }
+.thread .fill{ display:block; height:100%; border-radius:99px;
+  background:linear-gradient(90deg, var(--primary), var(--accent));
+  width:var(--w,60%); transition:width 1.4s cubic-bezier(.22,1,.36,1) }
+.thread .pct{ font-size:.78rem; min-width:3.2ch; text-align:right }
+.resume-demo{ display:grid; gap:.9rem; color:var(--muted) }
+.resume-demo .row{ display:flex; gap:.7rem; align-items:baseline; flex-wrap:wrap }
+.resume-demo .tag{ font-size:.72rem; font-weight:700; letter-spacing:.04em; padding:.18rem .55rem;
+  border-radius:6px }
+.tag-stop{ background:oklch(35% 0.12 25 / .5); color:oklch(85% 0.1 25) }
+.tag-go{ background:oklch(32% 0.1 152 / .55); color:var(--success) }
+.picker-demo{ display:grid; gap:.35rem; color:var(--muted) }
+.picker-demo .sel{ color:var(--ink); background:oklch(30% 0.09 262 / .6); border-radius:6px;
+  padding:.2rem .6rem; display:flex; justify-content:space-between; gap:1rem }
+.picker-demo .opt{ padding:.2rem .6rem; display:flex; justify-content:space-between; gap:1rem }
+.picker-demo .count{ color:var(--accent); font-size:.8rem }
+.mtproto{ display:grid; gap:.6rem; justify-items:center; text-align:center; padding:.6rem 0 }
+.mtproto .node{ display:flex; align-items:center; gap:.55rem; color:var(--ink); font-weight:600;
+  font-family:var(--font-sans) }
+.mtproto .link-line{ width:2px; height:34px;
+  background:repeating-linear-gradient(180deg, var(--accent) 0 5px, transparent 5px 10px) }
+.mtproto .lbl{ font-size:.75rem; color:var(--muted) }
+
+/* ============ tutorial ============ */
+.tutorial{ background:linear-gradient(180deg, var(--bg) 0%, oklch(10% 0.03 262) 50%, var(--bg) 100%) }
+.steps{ display:block; counter-reset:step; max-width:820px }
+.step{ position:relative; padding:2.2rem 0 2.6rem 4.4rem }
+.step::before{ counter-increment:step; content:counter(step);
+  position:absolute; left:0; top:2.05rem; width:2.7rem; height:2.7rem;
+  display:grid; place-items:center; border-radius:50%;
+  background:var(--surface-2); border:1px solid var(--line);
+  color:var(--accent); font-weight:750; font-size:1.05rem }
+.step::after{ content:""; position:absolute; left:1.32rem; top:5.2rem; bottom:0; width:2px;
+  background:repeating-linear-gradient(180deg, var(--line) 0 5px, transparent 5px 11px) }
+.step:last-child::after{ display:none }
+.step h3{ margin-bottom:.55rem; padding-top:.45rem }
+.step p{ color:var(--muted); margin-bottom:1rem }
+.step p a{ font-weight:600 }
+.codeblock{ position:relative; background:oklch(9% 0.025 262); border:1px solid var(--line);
+  border-radius:10px; margin:.9rem 0; max-width:100% }
+.codeblock pre{ padding:1rem 5.2rem 1rem 1.2rem; overflow-x:auto; font-family:var(--font-mono);
+  font-size:.87rem; line-height:1.65; color:oklch(89% 0.02 262) }
+.codeblock .cm{ color:var(--muted) }
+.codeblock .cs{ color:var(--success) }
+.copy-btn{ position:absolute; top:.55rem; right:.55rem; border:1px solid var(--line);
+  background:var(--surface); color:var(--muted); font-family:var(--font-sans); font-size:.78rem;
+  font-weight:600; padding:.32rem .7rem; border-radius:7px; cursor:pointer;
+  transition:color .15s, border-color .15s }
+.copy-btn:hover{ color:var(--ink); border-color:var(--primary-bright) }
+.step-tip{ display:flex; gap:.7rem; background:oklch(20% 0.06 262 / .5);
+  border:1px solid oklch(38% 0.09 262 / .6); border-radius:10px; padding:.85rem 1.1rem;
+  font-size:.92rem; color:var(--muted) }
+.step-tip svg{ flex:none; width:18px; height:18px; margin-top:.22rem; stroke:var(--accent) }
+
+/* ============ faq ============ */
+.faq-list{ max-width:820px; display:grid; gap:.8rem }
+.faq-item{ border:1px solid var(--line); border-radius:var(--radius);
+  background:color-mix(in oklab, var(--surface) 70%, transparent); overflow:hidden }
+.faq-item summary{ cursor:pointer; list-style:none; display:flex; justify-content:space-between;
+  gap:1rem; align-items:center; padding:1.15rem 1.4rem; font-weight:650; font-size:1.02rem }
+.faq-item summary::-webkit-details-marker{ display:none }
+.faq-item summary::after{ content:"+"; font-size:1.5rem; font-weight:400; color:var(--accent);
+  line-height:1; transition:transform .25s cubic-bezier(.22,1,.36,1) }
+.faq-item[open] summary::after{ transform:rotate(45deg) }
+.faq-item .faq-a{ padding:0 1.4rem 1.25rem; color:var(--muted) }
+@media (prefers-reduced-motion: reduce){ .faq-item summary::after{ transition:none } }
+
+/* ============ open source ============ */
+.oss{ text-align:center; padding-bottom:clamp(5rem,4rem + 4vw,8rem) }
+.oss-inner{ max-width:680px; margin-inline:auto; display:grid; justify-items:center; gap:1.2rem }
+.oss p{ color:var(--muted) }
+.gh-card{ display:inline-flex; align-items:center; gap:.9rem; border:1px solid var(--line);
+  border-radius:12px; padding:1rem 1.5rem; text-decoration:none; color:var(--ink);
+  background:var(--surface); transition:border-color .2s, transform .2s cubic-bezier(.22,1,.36,1) }
+.gh-card:hover{ border-color:var(--primary-bright); transform:translateY(-2px); color:var(--ink) }
+.gh-card svg{ width:26px; height:26px; fill:var(--ink) }
+.gh-card .gh-name{ font-weight:700 }
+.gh-card .gh-sub{ font-size:.83rem; color:var(--muted) }
+
+/* ============ footer ============ */
+footer{ border-top:1px solid var(--line); padding:2.2rem 0 2.6rem;
+  color:var(--muted); font-size:.9rem; background:var(--bg-deep) }
+.foot-inner{ display:flex; flex-wrap:wrap; gap:1.2rem 2.2rem; align-items:center }
+.foot-inner .brand{ font-size:1rem }
+.foot-links{ display:flex; gap:1.5rem; margin-left:auto; flex-wrap:wrap }
+.foot-links a{ color:var(--muted); text-decoration:none }
+.foot-links a:hover{ color:var(--ink) }
+.legal{ width:100%; font-size:.8rem; color:oklch(60% 0.03 262); max-width:75ch }
+
+/* ============ reveals (JS enhancement only) ============ */
+.js .reveal{ opacity:0; transform:translateY(22px);
+  transition:opacity .7s ease-out, transform .7s cubic-bezier(.22,1,.36,1) }
+.js .reveal.in{ opacity:1; transform:none }
+@media (prefers-reduced-motion: reduce){
+  .js .reveal{ opacity:1; transform:none; transition:none }
+}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="GramGrabber home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M29 4 3 14.4l7.6 3.2L26 7 13.2 19.5l.5 7.5 4.4-5 6.3 2.7L29 4Z" fill="oklch(83% 0.115 200)"/></svg>
+      GramGrabber
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#tutorial">Tutorial</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-gh" href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        GitHub
+      </a>
+      <a class="lang-switch" href="pt/" lang="pt-BR" hreflang="pt-BR">PT-BR</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-badges">
+        <span class="pill"><span class="dot"></span>Free &amp; open source</span>
+        <span class="pill">CLI · Go</span>
+        <span class="pill">macOS · Linux · Windows</span>
+      </div>
+      <h1>Download Telegram channel videos <em>at full speed</em>.</h1>
+      <p class="hero-sub">GramGrabber pulls every video from a Telegram channel straight to your disk — 8 parallel threads, resumable downloads, an interactive channel picker. No ads, no size limits, no middleman servers. Just your machine and Telegram.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#tutorial">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.6l3.8-3.8 1.4 1.4-6.2 6.2-6.2-6.2 1.4-1.4L10 13.6V3h2Zm-8 16h16v2H4v-2Z"/></svg>
+          Get started in 10 minutes
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          Star on GitHub
+        </a>
+      </div>
+      <p class="hero-note">Built with Go and the official Telegram API. <code>git clone → go build → done</code></p>
+    </div>
+
+    <div class="term reveal" aria-label="GramGrabber terminal demo">
+      <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span class="term-title">gram-grabber — zsh</span></div>
+      <pre class="term-body" id="termDemo"><span class="tp">$</span> ./gram-grabber
+<span class="tg">✓</span> Logged in as <span class="tc">@you</span>
+
+<span class="ta">?</span> Select a channel:
+  <span class="tc">›</span> Tech Talks Archive <span class="tp">(1,204 videos)</span>
+    Indie Film Club <span class="tp">(342 videos)</span>
+    Daily Design <span class="tp">(87 videos)</span>
+
+<span class="tg">↓</span> Downloading with 8 threads…
+ lecture_042.mp4  <span class="tc">[██████████████░░░░░░]</span> 71%  <span class="tg">38.2 MB/s</span>
+ lecture_043.mp4  <span class="tc">[█████████░░░░░░░░░░░]</span> 46%  <span class="tg">35.7 MB/s</span>
+ lecture_044.mp4  <span class="tc">[███████████████████░]</span> 97%  <span class="tg">40.1 MB/s</span><span class="term-caret" aria-hidden="true"></span></pre>
+    </div>
+  </div>
+</header>
+
+<div class="flight" aria-hidden="true">
+  <svg viewBox="0 0 1200 150" preserveAspectRatio="none">
+    <path class="path" id="flightPath" d="M-20,110 C260,20 520,140 760,70 S1080,40 1220,90"/>
+    <g id="planeG"><path class="plane" d="M0,-7 L14,0 L0,7 L3.5,0 Z"/></g>
+  </svg>
+</div>
+
+<!-- ================= FEATURES ================= -->
+<section id="features" aria-labelledby="features-h">
+  <div class="wrap">
+    <h2 id="features-h" class="reveal">Built to empty a channel, not to babysit it</h2>
+    <p class="section-lede reveal">Most Telegram video downloaders are browser gimmicks that choke on large files. GramGrabber is a real MTProto client that treats a 2&nbsp;GB video like any other file: split it, stream it, verify it.</p>
+
+    <div class="feat reveal">
+      <div>
+        <h3>8 parallel threads, saturated bandwidth</h3>
+        <p>Every video is fetched over <strong>8 concurrent connections</strong>, so a download that takes 20 minutes in the Telegram app lands in a fraction of the time. The limit becomes your connection, not the client.</p>
+      </div>
+      <div class="feat-visual threads" role="img" aria-label="Eight download threads running in parallel">
+        <div class="thread"><span class="tno">T1</span><span class="track"><span class="fill" style="--w:88%"></span></span><span class="pct">88%</span></div>
+        <div class="thread"><span class="tno">T2</span><span class="track"><span class="fill" style="--w:64%"></span></span><span class="pct">64%</span></div>
+        <div class="thread"><span class="tno">T3</span><span class="track"><span class="fill" style="--w:95%"></span></span><span class="pct">95%</span></div>
+        <div class="thread"><span class="tno">T4</span><span class="track"><span class="fill" style="--w:51%"></span></span><span class="pct">51%</span></div>
+        <div class="thread"><span class="tno">T5</span><span class="track"><span class="fill" style="--w:76%"></span></span><span class="pct">76%</span></div>
+        <div class="thread"><span class="tno">T6</span><span class="track"><span class="fill" style="--w:69%"></span></span><span class="pct">69%</span></div>
+        <div class="thread"><span class="tno">T7</span><span class="track"><span class="fill" style="--w:83%"></span></span><span class="pct">83%</span></div>
+        <div class="thread"><span class="tno">T8</span><span class="track"><span class="fill" style="--w:58%"></span></span><span class="pct">58%</span></div>
+      </div>
+    </div>
+
+    <div class="feat reveal">
+      <div>
+        <h3>Interrupted at 97%? Resume at 97%.</h3>
+        <p>Wi-Fi drops, laptops sleep, Telegram rate-limits. GramGrabber <strong>detects partial files and resumes exactly where the transfer stopped</strong> — no re-downloading gigabytes you already have.</p>
+      </div>
+      <div class="feat-visual resume-demo" role="img" aria-label="A download interrupted at 97 percent resuming from the same point">
+        <div class="row"><span class="tag tag-stop">CONNECTION LOST</span><span>lecture_044.mp4 — 1.9 GB of 2.0 GB</span></div>
+        <div class="thread"><span class="tno">↻</span><span class="track"><span class="fill" style="--w:97%"></span></span><span class="pct">97%</span></div>
+        <div class="row"><span class="tag tag-go">RESUMED</span><span>continuing from byte 2,040,109,465…</span></div>
+      </div>
+    </div>
+
+    <div class="feat reveal">
+      <div>
+        <h3>Pick a channel like picking a playlist</h3>
+        <p>No channel IDs to hunt down, no URLs to paste. GramGrabber lists <strong>every channel your account follows</strong> in an interactive menu — arrow keys, enter, downloading.</p>
+      </div>
+      <div class="feat-visual picker-demo" role="img" aria-label="Interactive channel selection menu">
+        <div class="sel"><span>› Tech Talks Archive</span><span class="count">1,204 videos</span></div>
+        <div class="opt"><span>&nbsp;&nbsp;Indie Film Club</span><span class="count">342 videos</span></div>
+        <div class="opt"><span>&nbsp;&nbsp;Daily Design</span><span class="count">87 videos</span></div>
+        <div class="opt"><span>&nbsp;&nbsp;Retro Gaming Vault</span><span class="count">2,051 videos</span></div>
+      </div>
+    </div>
+
+    <div class="feat reveal">
+      <div>
+        <h3>Your credentials, your machine, nothing in between</h3>
+        <p>GramGrabber speaks <strong>MTProto — Telegram's own protocol</strong> — directly from your computer using your personal API credentials. No third-party servers see your session, your channels or your files. The code is open; verify it yourself.</p>
+      </div>
+      <div class="feat-visual mtproto" role="img" aria-label="Diagram: your machine connects directly to Telegram with no server in between">
+        <div class="node">💻 Your machine</div>
+        <div class="link-line"></div>
+        <div class="lbl">MTProto · TLS · your api_id</div>
+        <div class="link-line"></div>
+        <div class="node">✈️ Telegram</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TUTORIAL ================= -->
+<section id="tutorial" class="tutorial" aria-labelledby="tutorial-h">
+  <div class="wrap">
+    <h2 id="tutorial-h" class="reveal">How to download videos from a Telegram channel</h2>
+    <p class="section-lede reveal">Four steps, about ten minutes, one-time setup. After this, downloading a whole channel is a single command.</p>
+
+    <div class="steps">
+      <div class="step reveal" id="step-1">
+        <h3>Get your Telegram API credentials</h3>
+        <p>Telegram requires every client app to identify itself. Log in at <a href="https://my.telegram.org" rel="noopener">my.telegram.org</a> with your phone number (the confirmation code arrives <em>inside the Telegram app</em>), open <strong>API development tools</strong>, and create an application — any name works. You'll receive an <code>api_id</code> and an <code>api_hash</code>.</p>
+        <div class="step-tip">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          <span>Treat your <code>api_hash</code> like a password — it's tied to your Telegram account. Never commit it or share it.</span>
+        </div>
+      </div>
+
+      <div class="step reveal" id="step-2">
+        <h3>Clone and configure</h3>
+        <p>Grab the source and drop your credentials into a local <code>.env</code> file:</p>
+        <div class="codeblock"><pre><code>git clone https://github.com/jordanalmeida/GramGrabber.git
+cd GramGrabber
+cp env.example .env</code></pre><button class="copy-btn" type="button" aria-label="Copy commands">Copy</button></div>
+        <p>Then edit <code>.env</code>:</p>
+        <div class="codeblock"><pre><code>APP_ID=1234567
+APP_HASH=your_api_hash_here</code></pre><button class="copy-btn" type="button" aria-label="Copy .env template">Copy</button></div>
+      </div>
+
+      <div class="step reveal" id="step-3">
+        <h3>Build the binary</h3>
+        <p>You need <a href="https://go.dev/dl/" rel="noopener">Go 1.25 or newer</a>. Two commands and you have a native executable:</p>
+        <div class="codeblock"><pre><code>go mod tidy
+go build -o gram-grabber .</code></pre><button class="copy-btn" type="button" aria-label="Copy build commands">Copy</button></div>
+      </div>
+
+      <div class="step reveal" id="step-4">
+        <h3>Log in, pick a channel, download</h3>
+        <p>Run it. The first time, GramGrabber signs you into Telegram (code arrives in the app). Then choose any channel from the menu and it starts pulling videos into the <code>downloads/</code> folder.</p>
+        <div class="codeblock"><pre><code>./gram-grabber</code></pre><button class="copy-btn" type="button" aria-label="Copy run command">Copy</button></div>
+        <div class="codeblock"><pre><code><span class="cm"># interrupted? just run it again —</span>
+<span class="cm"># it resumes right where it stopped</span>
+./gram-grabber   <span class="cs"># ↻ resuming lecture_044.mp4 at 97%</span></code></pre><button class="copy-btn" type="button" aria-label="Copy resume command">Copy</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq" aria-labelledby="faq-h">
+  <div class="wrap">
+    <h2 id="faq-h" class="reveal">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item reveal">
+        <summary>Is GramGrabber really free?</summary>
+        <div class="faq-a"><p>Yes — free and open source, forever. No ads, no premium tier, no download limits, no accounts, no telemetry. You can read every line of code <a href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">on GitHub</a>.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Is it safe to use with my Telegram account?</summary>
+        <div class="faq-a"><p>GramGrabber connects directly to Telegram through the official MTProto API — the same protocol the official apps use — with your own credentials. Nothing passes through third-party servers, and your session file stays on your machine.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Can I resume an interrupted download?</summary>
+        <div class="faq-a"><p>Yes. GramGrabber detects partially downloaded files and offers to continue exactly where the transfer stopped — even after a crash, a network drop or a reboot.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Does it work with private channels?</summary>
+        <div class="faq-a"><p>It works with any channel your Telegram account can access, including private channels you're a member of. It cannot (and will not) access channels you don't belong to.</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Why does it need my own api_id and api_hash?</summary>
+        <div class="faq-a"><p>Telegram requires every MTProto client to identify itself with API credentials. Using your own keeps the connection strictly between you and Telegram — GramGrabber never sees, stores or transmits them anywhere else. Getting them takes two minutes at <a href="https://my.telegram.org" rel="noopener">my.telegram.org</a> (covered in <a href="#step-1">step 1 of the tutorial</a>).</p></div>
+      </details>
+      <details class="faq-item reveal">
+        <summary>Is there a graphical version?</summary>
+        <div class="faq-a"><p>A desktop app with a graphical interface is on the roadmap. Today GramGrabber ships as a fast CLI for macOS, Linux and Windows — <a href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">watch the repo</a> to be notified when the GUI lands.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= OPEN SOURCE ================= -->
+<section class="oss" aria-labelledby="oss-h">
+  <div class="wrap oss-inner">
+    <h2 id="oss-h" class="reveal">Free software, in the honest sense</h2>
+    <p class="reveal">No "free trial", no locked features, no email wall. GramGrabber is open source: use it, audit it, fork it. If it saves you an afternoon, a ⭐ on GitHub is the only thank-you it asks for — and issues &amp; pull requests are always welcome.</p>
+    <a class="gh-card reveal" href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      <span><span class="gh-name">jordanalmeida/GramGrabber</span><br><span class="gh-sub">Go · MTProto · open source</span></span>
+    </a>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="#top">
+      <svg viewBox="0 0 32 32" aria-hidden="true" width="22" height="22"><path d="M29 4 3 14.4l7.6 3.2L26 7 13.2 19.5l.5 7.5 4.4-5 6.3 2.7L29 4Z" fill="oklch(83% 0.115 200)"/></svg>
+      GramGrabber
+    </a>
+    <div class="foot-links">
+      <a href="#features">Features</a>
+      <a href="#tutorial">Tutorial</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/jordanalmeida/GramGrabber" rel="noopener">GitHub</a>
+      <a href="pt/" lang="pt-BR" hreflang="pt-BR">Português</a>
+    </div>
+    <p class="legal">GramGrabber is an independent open-source project, not affiliated with or endorsed by Telegram FZ-LLC. Download only content you have the right to save, and respect Telegram's Terms of Service and content owners' copyright.</p>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- scroll reveals ---------- */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+/* safety: everything visible after 2.5s no matter what */
+setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')), 2500);
+
+/* ---------- night-sky canvas: 3 parallax depth layers ---------- */
+(() => {
+  const cv = document.getElementById('sky');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  let w, h, dpr, stars = [], streaks = [];
+  const LAYERS = [
+    { n: 70, size: [0.5, 1.1], speed: 0.008, par: 0.12, alpha: 0.45 },
+    { n: 45, size: [0.9, 1.7], speed: 0.016, par: 0.28, alpha: 0.7 },
+    { n: 22, size: [1.4, 2.4], speed: 0.028, par: 0.5,  alpha: 1 }
+  ];
+  function resize() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    w = cv.clientWidth; h = cv.clientHeight;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = [];
+    LAYERS.forEach((L, li) => {
+      for (let i = 0; i < L.n; i++) stars.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: L.size[0] + Math.random() * (L.size[1] - L.size[0]),
+        tw: Math.random() * Math.PI * 2, li
+      });
+    });
+  }
+  function spawnStreak() {
+    if (streaks.length > 2) return;
+    const y = h * (0.15 + Math.random() * 0.5);
+    streaks.push({ x: -60, y, vx: 6 + Math.random() * 4, vy: -0.4 - Math.random() * 0.5, life: 1 });
+  }
+  let scrollY = 0, t = 0;
+  addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    t += 0.016;
+    for (const s of stars) {
+      const L = LAYERS[s.li];
+      s.x += L.speed; if (s.x > w + 4) s.x = -4;
+      const twinkle = 0.65 + 0.35 * Math.sin(t * 1.4 + s.tw);
+      const py = (s.y + scrollY * L.par) % (h + 8);
+      ctx.globalAlpha = L.alpha * twinkle;
+      ctx.fillStyle = s.li === 2 ? 'rgb(170,205,255)' : 'rgb(200,215,255)';
+      ctx.beginPath(); ctx.arc(s.x, py, s.r, 0, 7); ctx.fill();
+    }
+    for (let i = streaks.length - 1; i >= 0; i--) {
+      const k = streaks[i];
+      k.x += k.vx; k.y += k.vy; k.life -= 0.008;
+      if (k.life <= 0 || k.x > w + 80) { streaks.splice(i, 1); continue; }
+      const grad = ctx.createLinearGradient(k.x - 70, k.y + 8, k.x, k.y);
+      grad.addColorStop(0, 'rgba(120,190,255,0)');
+      grad.addColorStop(1, `rgba(150,210,255,${0.5 * k.life})`);
+      ctx.strokeStyle = grad; ctx.lineWidth = 1.4; ctx.globalAlpha = 1;
+      ctx.beginPath(); ctx.moveTo(k.x - 70, k.y + 8); ctx.lineTo(k.x, k.y); ctx.stroke();
+    }
+    if (Math.random() < 0.004) spawnStreak();
+    requestAnimationFrame(frame);
+  }
+  resize();
+  addEventListener('resize', resize);
+  if (reduced) { // static frame only
+    for (const s of stars) {
+      const L = LAYERS[s.li];
+      ctx.globalAlpha = L.alpha * 0.8;
+      ctx.fillStyle = 'rgb(200,215,255)';
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+    }
+  } else requestAnimationFrame(frame);
+})();
+
+/* ---------- flight path: plane follows the curve on scroll ---------- */
+(() => {
+  const path = document.getElementById('flightPath');
+  const plane = document.getElementById('planeG');
+  if (!path || !plane) return;
+  const len = path.getTotalLength();
+  path.style.strokeDasharray = '7 9';
+  function place(p) {
+    const pt = path.getPointAtLength(p * len);
+    const ahead = path.getPointAtLength(Math.min(len, p * len + 2));
+    const ang = Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * 180 / Math.PI;
+    plane.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${ang})`);
+  }
+  if (reduced) { place(0.62); return; }
+  const wrap = path.closest('.flight');
+  function onScroll() {
+    const r = wrap.getBoundingClientRect();
+    const vh = innerHeight;
+    const prog = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
+    place(prog);
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ---------- terminal typing demo ---------- */
+(() => {
+  const el = document.getElementById('termDemo');
+  if (!el || reduced) return; // reduced motion: keep the full static frame
+  const finalHTML = el.innerHTML;
+  const script = [
+    { html: '<span class="tp">$</span> ./gram-grabber<span class="term-caret"></span>', wait: 900 },
+    { html: '<span class="tp">$</span> ./gram-grabber\n<span class="tg">✓</span> Logged in as <span class="tc">@you</span>\n\n<span class="ta">?</span> Select a channel:\n  <span class="tc">›</span> Tech Talks Archive <span class="tp">(1,204 videos)</span>\n    Indie Film Club <span class="tp">(342 videos)</span>\n    Daily Design <span class="tp">(87 videos)</span><span class="term-caret"></span>', wait: 1600 },
+    { html: null, wait: 0 } // final frame
+  ];
+  let i = 0;
+  function next() {
+    if (i >= script.length - 1) { el.innerHTML = finalHTML; animateBars(); return; }
+    el.innerHTML = script[i].html;
+    setTimeout(next, script[i++].wait);
+  }
+  const BARS = [[71, 38.2], [46, 35.7], [97, 40.1]];
+  let animated = false;
+  function animateBars() {
+    if (animated) return; animated = true;
+    let p = [8, 3, 22];
+    const iv = setInterval(() => {
+      let done = true;
+      const lines = el.innerHTML;
+      p = p.map((v, j) => {
+        const target = BARS[j][0];
+        if (v < target) { done = false; return Math.min(target, v + 1 + Math.random() * 2.4); }
+        return v;
+      });
+      // rebuild the three bar lines
+      const names = ['lecture_042.mp4', 'lecture_043.mp4', 'lecture_044.mp4'];
+      const barLines = p.map((v, j) => {
+        const filled = Math.round(v / 5), rest = 20 - filled;
+        return ` ${names[j]}  <span class="tc">[${'█'.repeat(filled)}${'░'.repeat(rest)}]</span> ${String(Math.round(v)).padStart(2)}%  <span class="tg">${BARS[j][1]} MB/s</span>`;
+      });
+      el.innerHTML = '<span class="tp">$</span> ./gram-grabber\n<span class="tg">✓</span> Logged in as <span class="tc">@you</span>\n\n<span class="ta">?</span> Select a channel:\n  <span class="tc">›</span> Tech Talks Archive <span class="tp">(1,204 videos)</span>\n    Indie Film Club <span class="tp">(342 videos)</span>\n    Daily Design <span class="tp">(87 videos)</span>\n\n<span class="tg">↓</span> Downloading with 8 threads…\n' + barLines.join('\n') + '<span class="term-caret"></span>';
+      if (done) clearInterval(iv);
+    }, 90);
+  }
+  const tio = new IntersectionObserver(es => {
+    if (es[0].isIntersecting) { tio.disconnect(); next(); }
+  }, { threshold: 0.4 });
+  tio.observe(el);
+})();
+
+/* ---------- copy buttons ---------- */
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const code = btn.parentElement.querySelector('pre').innerText;
+    try {
+      await navigator.clipboard.writeText(code);
+      const old = btn.textContent; btn.textContent = '✓ Copied';
+      setTimeout(() => { btn.textContent = old; }, 1600);
+    } catch { btn.textContent = 'Select & copy'; }
+  });
+});
+</script>
+</body>
+</html>

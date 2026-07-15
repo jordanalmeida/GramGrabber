@@ -2,6 +2,8 @@
 
 A CLI tool written in Go to download videos from Telegram channels.
 
+**Website:** https://jordanalmeida.github.io/GramGrabber/ ([Português](https://jordanalmeida.github.io/GramGrabber/pt/)) — features, step-by-step tutorial and FAQ.
+
 ## Features
 
 - 🚀 **Fast Downloads**: Uses 8 parallel threads for maximum speed.
